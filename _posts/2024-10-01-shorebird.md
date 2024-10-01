@@ -15,10 +15,6 @@ image:
   alt: Even하게 익히자
 ---
 
-## 주제 선정의 이유
-
----
-
 글또에 참여하게 되었고 처음에는 어떤 주제로 글을 써야할지 고민이 많았다.
 
 그러던 중 24년 9월 마지막주에 [Future\<Flutter>](https://festa.io/events/5704) 에 참여하여 연사를 듣게되었다.
@@ -36,7 +32,6 @@ image:
 <!-- start post -->
 ## What is Shorebird?
 
----
 ![Shorebird #1](/assets/post/shorebird/shorebird.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
 
 Shorebird는 Flutter 애플리케이션을 위한 코드 업데이트 배포 플랫폼이다.
@@ -68,8 +63,6 @@ Eric이 말하기에는 ReactNative 에서 사용되는 기술로 기존 틱톡�
 <center>기존 배포 방식에 대한 간단한 예시 그림</center>
 
 [이미지 출처](https://gsretail.tistory.com/43)
-
----
 
 ## Feature of Shorebird
 
@@ -273,13 +266,10 @@ Shorebird는 RN을 겪어보지 않고 codepush의 개념을 모르는 경우에
 
 아직 배포에 대한 내용은 포함되어 있지 않고, 추후 사이드프로젝트에 적용하면서 추가 하면서 실직적으로 사용해보고 심화해볼 예정이다.
 
-# 참조
-
----
+## 참조
 
 - [Shorebird(Flutter CodePush) 사용방법](https://medium.com/@moo_min/shorebird-flutter-codepush-%EC%82%AC%EC%9A%A9%EB%B0%A9%EB%B2%95-0fd514528917){:target="_blank"}
 - [Shorebird 공식사이트](https://shorebird.dev/){:target="_blank"}
 - [항상 켜져 있는 태블릿 앱에 Shorebird 적용 후기](https://haragoo30.medium.com/%ED%95%AD%EC%83%81-%EC%BC%9C%EC%A0%B8%EC%9E%88%EB%8A%94-%ED%83%9C%EB%B8%94%EB%A6%BF%EC%95%B1%EC%97%90-shorebird-%EC%A0%81%EC%9A%A9-%ED%9B%84%EA%B8%B0-e312caeda363){:target="_blank"}
 
 <!-- end post -->
-<br>
