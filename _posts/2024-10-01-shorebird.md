@@ -12,7 +12,7 @@ image:
   path: /assets/post/shorebird/even.png
   width: 1000   # in pixels
   height: 400   # in pixels
-  alt: even하게 익히자
+  alt: Even하게 익히자
 ---
 
 ## 주제 선정의 이유
