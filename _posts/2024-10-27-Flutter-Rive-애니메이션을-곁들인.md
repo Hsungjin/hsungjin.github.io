@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Flutter Rive 애니메이션을 곁들인
-date: 2024-10-01 15:11:33 +0900
+date: 2024-10-26 15:11:33 +0900
 categories: [Flutter]
 tags: [Flutter, rive]
 description: Flutter 애니메이션을 넣을수 있는 방법중에 하나인 Rive에 대해서 알아보자
@@ -36,68 +36,60 @@ image:
 <!-- start post -->
 ## What is Rive?
 
-![Shorebird #1](/assets/post/shorebird/shorebird.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
+그럼 Rive 란 무엇일까?
 
------------------------
+> 인터랙티브 애니메이션을 만드는 플랫폼
 
-Shorebird는 Flutter 애플리케이션을 위한 코드 업데이트 배포 플랫폼이다.
+이라고 한다.
 
-근데 이렇게만 들어서 이해를 하는 사람은 없을거다.
+이게 뭐지? 라고 의문이 들수 있는데 기존의 방식과는 다르게 Hover를 지원한다던가 로티와 다르게 인터랙티브 한 것을 느꼈다.
 
-물론 나도 연사를 들으면서 이해를 하지 못했다.
+~~근데 로티보단 사용이 어렵다~~
 
-Eric이 말하기에는 ReactNative 에서 사용되는 기술로 기존 틱톡이 사용하는 CodePush와 비슷하다고 설명했는데 나는 CodePush를 사용해본 경험이 없어서 이해를 하지 못했다.
+[Rive 공식 사이트](https://rive.app/)에 접속하게 되면 수많은 애니메이션을 볼 수 있다.
 
-영어 연사를 들으면서 대충 어떤 느낌으로 쓰고있구나 감만 잡고있는 상태에서 조금더 자세히 알아보았다.
+물론 직접 만들고 다른 사람의 창작물을 변경할수 있지만, 나는 디자인 감각이 없어서 그냥 가져다가 쓰는걸 더 좋아한다.
 
-쇼어버드를 사용하면 **각 배포플랫폼(iOS, Android)** 에서 빌드하는 과정에서 소스코드를 추가하는 방식으로 동작한다.
+오늘은 그중에서 JcToon 님이 만든 [Login Screen Character](https://rive.app/community/files/3469-7899-login-screen-character/)라는 귀여운 곰을 사용해보려고한다.
 
-예를들어 우리가 기존의 방식으로 앱을 출시한다고 예를 들어보자.
+## How to use Rive
 
-우리는 앱을 출시하기 위해서 각 플랫폼에 맞는 빌드를 하고 심사를 받고 심사가 통과되면 배포를 하게 된다.
+### Install Rive
 
-그러면 추가적으로 코드를 수정해서 버그를 고치거나 기능울 추가해야한다면 어떻게 해야될까?
+[pub.dev](https://pub.dev/packages/rive) 에 방문하게 되면 Rive 관련 라이브러리를 찾아볼수있다.
 
-수정된 코드의 앱을 빌드하고 다시 심사를 받고 배포를 하게 된다. 이 과정에서 리젝이라는 결과를 받게 되면 아주 슬픈 일이 일어날 수도 있다.
+```bash
+$ flutter pub add rive
+```
 
-이런 심사와 배포의 과정을 줄일수있는 것이 CodePush 즉 Flutter 에서의 CodePush 도구는 Shorebird 이다.
+또는
 
-> 이름의 유래는 플러터의 첫 사무실이 마운틴 뷰의 Shorebird Way에 있어서 그렇게 이름이 지어졌다고 한다.
+yaml 파일에
 
-![Shorebird #2](/assets/post/shorebird/app.jpeg){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
+```yaml
+dependencies:
+  rive: ^0.13.15
+```
 
-<center>기존 배포 방식에 대한 간단한 예시 그림</center>
+추가해 주두록 하자!
 
-[이미지 출처](https://gsretail.tistory.com/43)
+### Rive의 기초 동작원리
 
-## Feature of Shorebird
+![rive#1](/assets/post/rive/rive_bear.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
 
-- Flutter를 위한 OTA(Over The Air) 업데이트 제공
+라이브 관련 페이지에 들어가게되면 제일먼저 보이게 되는것이 State Machine 이다
 
-- 5분안에 앱에 적용 가능하며 실제 코드의 변경이 필요하지 않음. 플러터 앱의 Dart 코드를 즉각 업데이트 해줌.
+#### StateMachine
 
-- 앱의 패치 횟수에 따라 과금
-  - 리액트 네이티브 인 경우 코드 푸시가 무료로 진행되는데 Shorebird 는 유료이고 install 수로 카운팅 됩니다.
-  - 무료 플랜인 경우 매달 5,000 번 무료 그 이후 매 install 시 0.005달러 추가 부과
-  - $20 for up to 50K patch installs
-  - $100 for up to 300K patch installs
-  - $300 for up to 1M patch installs
-  - $700 for up to 2.5M patch installs
-  - $1,250 for up to 5M patch installs
-  - $2,000 for up to 10M patch installs
-  - 큰 앱인 경우 컨택하여 조정 가능하다고 합니다.
+StateMachine 은 각 상태를 컨트롤 할 수 있게해 준다.
+추후 상태를 StateMachineController로 조절하여 애니메이션의 상태를 APP 내부에서 동작 시킬수 있도록 해준다.
 
-- iOS의 경우 Shorebird와 Flutter stable 최신 버전 필요
+#### Input
 
-- 앱스토어와 플레이스토어 규정을 준수(준수 하지 않으면 계정 자체가 정지 당할 수 있다고 함)
+![rive#2](/assets/post/rive/rive2.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
 
-## How does it work Shorebird?
-
-![Shorebird #3](/assets/post/shorebird/shorebird_2.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
-
-<center>Shorebird의 동작 원리</center>
-
-[이미지 출처](https://haragoo30.medium.com/%ED%95%AD%EC%83%81-%EC%BC%9C%EC%A0%B8%EC%9E%88%EB%8A%94-%ED%83%9C%EB%B8%94%EB%A6%BF%EC%95%B1%EC%97%90-shorebird-%EC%A0%81%EC%9A%A9-%ED%9B%84%EA%B8%B0-e312caeda363)
+어떻게 동작할건지 에 대한 부분이다
+Boolean, Trigger, Number 가 있는데
 
 Shorebird는 3가지 툴로 구성되어있다.
 
