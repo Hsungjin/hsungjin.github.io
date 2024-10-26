@@ -91,183 +91,192 @@ StateMachine 은 각 상태를 컨트롤 할 수 있게해 준다.
 어떻게 동작할건지 에 대한 부분이다
 Boolean, Trigger, Number 가 있는데
 
-Shorebird는 3가지 툴로 구성되어있다.
+Boolean -> true 와 false로 구분
+Trigger -> 클릭했을때 한번만 동작
+Number -> 특정 값이 포함되어 있거나 그 값이면 동작
 
-- 배포와 빌드를 용이하게 해주는 CLI 툴
+이렇게 세가지 Input Type이 있다.
+이 타입을 우리는 Flutter 코드에서는 SMIInput을 사용한다.
+SMIBool, SMITrigger, SMINumber 이렇게 사용하게 된다.
 
-- 자체적으로 수정한 Flutter 엔진
+그럼 기초적인 동작원리는 알았고 어떻게 사용하면 될까?
 
-- 패치를 담당할 host server
+### Rive 회원가입 곰 예제
 
-Shorebird로 빌드된 앱에는 수정된 Flutter 엔진이 포함되어 있어 앱 시작시 앱의 Dart 코드에 대한 업데이트를 확인 후 업데이트가 있으면 엔진이 업데이트를 다운로드 한다.
+우선 사용하기 위해선 [해당 애니메이션](https://rive.app/community/files/3469-7899-login-screen-character/)에 대해서 export 해주게 되면 .riv 라는 파일이 하나가 나온다.
+그걸 assets 에 추가해줘야 한다.
 
-정리하면 개발자가 Shorebird 서버에 코드를 업로드 해 놓은 후, 앱 시작 시 변경 사항이 있는지 확인 후 필요 시 다운로드를 진행하는 방식이라고 한다.
+![rive#3](/assets/post/rive/rive3.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
 
-그럼 여기서 의문이 들 수 있다. Shorebird가 내 코드를 저장하고있나? 라고 생각이 들 수 있다.
+그 다음 텍스트 필드(ID, PW)용 두개, 로그인 버튼을 간단하게 만들어보자
 
-하지만 Shorebird는 내 코드를 저장하고 있지 않다. QnA에서 보면 소스코드를 보고있지 않는다고 한다.
-
-[관련 공식사이트](https://shorebird.dev/privacy/?source=post_page-----0fd514528917--------------------------------)
-
-## How to use Shorebird?
-
-### 1. Shorebird 회원가입
-
-일단 Google 또는 Microsoft 계정으로 회원가입을 해야한다.
-
-[Shorebird 회원가입 링크](https://console.shorebird.dev/login?source=post_page-----0fd514528917--------------------------------)
-
-### 2. Shorebird CLI 설치 📦
-
-Shorebrid 는 CLI를 기반으로 배포와 빌드가 동작하니 때문에 설치해주어야 한다.
-
-회원가입시 나타나는 공식문서 기준의 가이드를 사용했다.
-
-**MAC 설치**
-
-Open a terminal and run
-나는 맥밖에 업어서 이쁜이 터미널 iTerm2를 사용했다
-
-```bash
-curl --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/shorebirdtech/install/main/install.sh -sSf | bash
+```dart
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text(widget.title),
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextField(
+                controller: idTextController,
+                decoration: const InputDecoration(
+                  hintText: "ID를 입력해주세요.",
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: pwTextController,
+                decoration: const InputDecoration(
+                  hintText: "PW를 입력해주세요.",
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(88, 36),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(2)),
+                    ),
+                ),
+                onPressed: () {},
+                child: Text('로그인'),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 ```
 
-**Windows 설치**
+다음과 같이 간단한 로그인 화면을 만들어 주었다.
 
-Open PowerShell and run:
+그 다음 StateMachineController 와 Input에 대한 부분을 만들어 주어야 한다
 
-```bash
-Set-ExecutionPolicy RemoteSigned -scope CurrentUser # Needed to execute remote scripts
-iwr -UseBasicParsing 'https://raw.githubusercontent.com/shorebirdtech/install/main/install.ps1'|iex
+```dart
+  // StateMachine을 컨트롤 할 수 있게 도와주는 Controller
+  late StateMachineController stateMachineController;
+  late SMIBool _check;
+  late SMINumber _look;
+  late SMITrigger _sucess;
+  late SMITrigger _fail;
+  late SMIBool _handUp;
+  
+  void _onInit(Artboard art) {
+    //StateMachine 이름 일치하게 입력
+    stateMachineController = StateMachineController.fromArtboard(art, 'State Machine 1')!;
+    stateMachineController.isActive = true;
+    art.addController(stateMachineController);
+
+    // Input에 있는 이름도 동일하게 입력
+    _check = stateMachineController.findInput<bool>('Check') as SMIBool;
+    _look = stateMachineController.findInput<double>('Look') as SMINumber;
+    _sucess = stateMachineController.findInput<bool>('success') as SMITrigger;
+    _fail = stateMachineController.findInput<bool>('fail') as SMITrigger;
+    _handUp = stateMachineController.findInput<bool>('hands_up') as SMIBool;
+  }
+```
+다음과 같이 State를 관리할수 있는 Controller 부분과 각각의 input에 의해 정리된 부분을 선언해주어야 사용 할수 있다.
+
+그러면 저기서 이름규칙이 한글자라도 틀리게 되면 오류가 나니까 조심하세요! 물론 제가 그랬다고요.. ㅎㅎ
+
+솔직히 여기까지 왔으면 이제 끝이라고 볼수있다.
+
+그냥 RiveAnimation.asset 위젯을 사용해서 나타내 주고 해당 부분에 대해서 조건문을 넣어주면 된다.
+
+```dart
+RiveAnimation.asset('assets/login.riv', stateMachines: ['State Machine 1'] , onInit: _onInit, fit: BoxFit.fitWidth, alignment: Alignment.center,)
 ```
 
-**CLI 설치 확인**
-우리에게 친숙한 flutter doctor 명령여와 비슷하게
-터미널에서 다음 명령어를 실행시켜 확인할 수있다.
+이런식으로 말이다.
 
-```bash
-shorebird doctor
+나와 같은 경우에는 ID를 입력할때는 Check 가 사용되게하고 아이디의 길이에 따라 Look 을 사용해서 눈이 움직이도록 했다.
+
+비밀번호를 입력할땐 손이 올라오고 로그인의 조건(현재는 간단하게 ID - 123, PW - 123)에 따라서 성공과 실패를 반환하도록 했다.
+
+그러기 위해서
+
+```dart
+  final FocusNode idFocus = FocusNode();
+  final FocusNode pwFocus = FocusNode();
 ```
 
-다음 이미지와 같이 정상적으로 나오는 걸 볼수있다.
+각각의 텍스트 필드에 대한 FocusNode를 선언해 주고
 
-![Shorebird #4](/assets/post/shorebird/shorebird_3.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
+```dart
+  void initState() {
+    idTextController.addListener(() {
+      setState(() {
+        _look.value = idTextController.text.length.toDouble();
+      });
+    });
 
-### 3. Shorebird 로그인  🔐
+    idFocus.addListener(() {
+      setState(() {
+        _check.value = idFocus.hasFocus;
+      });
+    });
 
-터미널에서 다음 명령어를 입력하면 https ~~ 어쩌구 저쩌구하는 URL이 나오는데
-해당 링크에 방문해서 로그인을 하면 정상적으로 로그인이 되는 것을 볼 수 있다.
+    pwFocus.addListener(() {
+      _handUp.value = pwFocus.hasFocus;
+    });
 
-```bash
-shorebird login
+    super.initState();
+  }
+```
+initState에서 각각의 Lintner를 달아주고
+
+```dart
+ElevatedButton(
+  style: ElevatedButton.styleFrom(
+    padding: const EdgeInsets.symmetric(horizontal: 16),
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(Radius.circular(2)),
+    ),
+  ),
+  onPressed: () {
+    FocusScope.of(context).unfocus();
+    if (idTextController.text == "123" && pwTextController.text == "123") {
+      _sucess.fire();
+    } else {
+      _fail.fire();
+    }
+  },
+  child: Text('로그인'),
+)
 ```
 
-![Shorebird #5](/assets/post/shorebird/shorebird_4.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
+조건에 따라서 Trigger에 대한 부분을 사용해주면된다
 
-### 4.Initialize Shorebird in your Flutter project 🐦
+여기서 주의해야 할 점은 Trigger 이녀석들은 fire() 를 사용해 주도록해야한다.
 
-필자는 제일 기본적인 카운터 앱에 적용해보려고 한다.
+이러면 회원가입 조건에따라서 다음 동영상 처럼 귀여운 곰이 나타난다.
 
-자신이 적용할 프로젝트에 들어가 루트의 위치에서 다음 명령어를 입력한다.
+![rive#4](/assets/post/rive/rive4.gif){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
 
-```bash
-shorebird init
-```
-
-다음 명령어를 입력하게 되면 다음 이미지와 같은 값이 출력 되고
-
-![Shorebird #6](/assets/post/shorebird/shorebird_5.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
-
-shorebird.yaml 파일이 자동으로 생성되고, pubsepc.yaml의 assets에도 추가가되는걸 볼수있다.
-
-shorebird.yaml 파일 안에는 app_id 가 들어가있는데 공식문서 상에서는 비밀로 유지할 필요가 없다고 한다!
-
-### 5. Create a release 🚀
-
-다음 명령어를 통해서 안드로이드, iOS에 대한 릴리즈 파일을 만들 수 있다.
-이렇게 만들어진 앱을 제출해 앱스토어, 플레이스토어에 올리게 되면 제출된 Shorebird를 기준으로 앱의 변경 사항을 체크하고, 무선으로 업데이트 해주는 방식이다.
-
-```bash
-shorebird release android 
-
-shorebird release ios
-```
-
-안드로이드 기준 결과
-
-![Shorebird #7](/assets/post/shorebird/shorebird_6.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
-
-iOS 기준 결과
-
-![Shorebird #8](/assets/post/shorebird/shorebird_7.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
-
-### 6. Shorebird Preview
-
-그러면 우리가 해당 앱을 미리 시뮬을 통해서 봐야되는 상황에는 해당 명령어를 통해 접근 할 수 있다.
-
-```bash
-shorebird preview
-```
-
-### 7. Create a patch 🧩
-
-패치 명령어를 통해 5번에서 Relase된 apk 또는 ipa 파일에 적용시켜줄 수 있다
-
-```bash
-shorebird patch android
-
-shorebird patch ios
-```
-
-최초에 release 된 앱은 아래 이미지와 같이 기본 카운터 앱이다.
-
-![Shorebird #9](/assets/post/shorebird/shorebird_8.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
-
-근데 patch를 통해 카운터를 마이너스로 바꾸고 색상도 바꾸어 주었다.
-
-기존과 같으면 새로운 빌드를 통해 앱을 적용시키거나 apk파일을 다시 업데이트 해야되었지만,
-patch 를 사용하면 앱을 재실행만 하면 다음과 같이 별도의 앱 설치과정 없이 code push를 할 수 있는 것이다.
-
-![Shorebird #10](/assets/post/shorebird/shorebird_9.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
-
-### 8. Shorebird Console 🎛️
-
-Shorebird Console 에서는 버전을 관리하고, 앱의 목록을 보고, 앱을 언제 Patch했고 몇명이 Patch를 받았고 등의 정보를 받을수 있다고 한다.
-
-![Shorebird #11](/assets/post/shorebird/shorebird_10.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
-
-## Shorebird 의 한계
-
-- pubspec.yaml 네이티브 코드 변경 사항은 반영되지 않음
-
-- asset(이미지 글꼴) 변경 사항은 반영되지 않음
-
-- 앱의 플러터 버전 적용 불가
-
-- 특정 조건에 따라 요금이 존재한다
+### [관련 전체 코드](https://github.com/Hsungjin/Flutter/tree/main/rive_example)
 
 ## 내가 느낀 결론
 
-Shorebird는 RN을 겪어보지 않고 codepush의 개념을 모르는 경우에 처음 접했을 때 되게 신선한 충격으로 느껴졌다.
+확실히 그냥 가져와서 크기를 정해주면 쉽게 사용할수있는 Lottie 와는 다르게 생각해야 되는 것도 많고 적용할때 처음에 헤매는 부분이 생길수밖에 없는것같다.
 
-아니 이러면 기존에 까다로운 심사를 우회할 수 있는거 아니야?
+물론 강의를 듣고 글을 찾아봐도 잘 안되는 부분도 존재했고 그냥 이럴거면 Lottie에서 기깔나는걸 쓰는게 더 좋지않을까? 했지만 내 생각에 모바일은 애니메이션이 이뻐야한다는 생각이 강하다.
 
-하지만 그러면 안된다 언젠가 정책을 위반한 사실이 걸리게 되면 계정자체가 정지될 수 있다고 한다.
+Rive를 사용하면 Lottie에서는 느낄수 없는 경험을 느끼는것 같아서 언젠간 적용해보겠다는 다짐을 하지만 아직은 모르겠다.
 
-그래서 이걸 어떻게 사용할까? 매번 귀찬은 심사를 피하고 오류를 수정할때(hotfix)의 경우에 크게 사용할 수 있다고 생각된다.
-
-하지만 **비싼 요금**에 대한 생각때문에 앱에 적용하는게 맞을까? 라는 생각이 들게한다.
-
-물론 플러터에서 사용할 수 있는 좋은 도구임은 절대 변하지 않는 사실이다.
-
-그래서 나는 사이드 프로젝트에 적용해보면서 기술스택을 쌓는다는 느낌으로 적용해보려고한다.
-
-아직 배포에 대한 내용은 포함되어 있지 않고, 추후 사이드프로젝트에 적용하면서 추가 하면서 실직적으로 사용해보고 심화해볼 예정이다.
+애니메이션을 이쁘게 넣을수 있다면 그게 나는 좋은것 같다.
 
 ## 참조
 
-- [Shorebird(Flutter CodePush) 사용방법](https://medium.com/@moo_min/shorebird-flutter-codepush-%EC%82%AC%EC%9A%A9%EB%B0%A9%EB%B2%95-0fd514528917){:target="_blank"}
-- [Shorebird 공식사이트](https://shorebird.dev/){:target="_blank"}
-- [항상 켜져 있는 태블릿 앱에 Shorebird 적용 후기](https://haragoo30.medium.com/%ED%95%AD%EC%83%81-%EC%BC%9C%EC%A0%B8%EC%9E%88%EB%8A%94-%ED%83%9C%EB%B8%94%EB%A6%BF%EC%95%B1%EC%97%90-shorebird-%EC%A0%81%EC%9A%A9-%ED%9B%84%EA%B8%B0-e312caeda363){:target="_blank"}
-
+- [Rive를 Flutter에서 사용하는 방법](https://medium.com/@moo_min/rive%EB%A5%BC-flutter%EC%97%90%EC%84%9C-%EC%82%AC%EC%9A%A9%ED%95%98%EB%8A%94-%EB%B0%A9%EB%B2%95-1533ccbfc7ac){:target="_blank"}
+- [패스트 캠퍼스 강의](https://fastcampus.co.kr/dev_online_dartflutter){:target="_blank"}
 <!-- end post -->
