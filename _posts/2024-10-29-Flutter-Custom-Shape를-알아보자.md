@@ -57,7 +57,7 @@ Widget _item1() {
 1은 끝 모양을 의미한다. 1을 넣으면 직사각형이 나타난다.
 이를 통해 두 모양의 중간 형태를 만들 수 있다.
 
-![shape#1](/assets/post/shape/shpae1.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
+![shape#1](/assets/post/shape/shape1.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
 
 ### 1.2 일반적인 둥근 모서리 Box
 ```dart
@@ -74,7 +74,7 @@ Widget _item2() {
 ```
 `BoxDecoration`은 Flutter에서 가장 일반적으로 사용되는 장식 위젯이다. `borderRadius`로 모서리의 둥글기를 지정할 수 있으며, `shape`으로 기본 형태를 설정할 수 있다. `BoxShape.rectangle`은 사각형 형태를 의미한다.
 
-![shape#2](/assets/post/shape/shpae2.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
+![shape#2](/assets/post/shape/shape2.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
 
 ### 1.3 ShapeDecoration을 활용한 특별한 모양
 ```dart
@@ -92,7 +92,7 @@ Widget _item3() {
 ```
 `ShapeDecoration`은 `BoxDecoration`보다 더 다양한 형태를 구현할 수 있다. `BeveledRectangleBorder`를 사용하면 모서리가 대각선으로 깎인 8각형 형태를 만들 수 있다.
 
-![shape#3](/assets/post/shape/shpae3.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
+![shape#3](/assets/post/shape/shape3.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
 
 ### 1.4 미리 정의 된 모양을 사용
 ```dart
@@ -110,7 +110,7 @@ Flutter는 `StarBorder`와 같은 미리 정의된 특수 도형들을 제공한
 이러한 내장 도형들은 별도의 복잡한 구현 없이도 특별한 모양을 쉽게 만들 수 있게 해준다.
 물론 나도 처음 써본다..!
 
-![shape#4](/assets/post/shape/shpae4.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
+![shape#4](/assets/post/shape/shape4.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
 
 ## 2. 커스텀 ShapeBorder 구현하기
 
@@ -164,7 +164,7 @@ Widget _item5() {
 }
 ```
 
-![shape#5](/assets/post/shape/shpae5.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
+![shape#5](/assets/post/shape/shape5.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
 
 ### 2.1 메시지 버블 활용 예시
 ```dart
@@ -184,7 +184,7 @@ Widget _item6() {
 커스텀 `MessageShapeBorder`를 사용하여 채팅 버블과 같은 모양을 만들 수 있다. 
 `borderRadius`와 `side` 속성으로 테두리의 스타일을 조절할 수 있다.
 
-![shape#6](/assets/post/shape/shpae6.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
+![shape#6](/assets/post/shape/shape6.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
 
 ### 2.2 이미지 클리핑 예시
 ```dart
@@ -205,7 +205,7 @@ Widget _item7() {
 ```
 `ClipPath`와 `ShapeBorderClipper`를 사용하면 이미지를 원하는 형태로 잘라낼 수 있다. 여기서는 우리가 만든 `MessageShapeBorder`를 사용하여 이미지를 메시지 버블 형태로 잘라낸다.
 
-![shape#7](/assets/post/shape/shpae7.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
+![shape#7](/assets/post/shape/shape7.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
 
 ## 내가 느낀 결론
 
