@@ -284,7 +284,9 @@ CustomShape를 직접 구현해보면서 몇 가지 중요한 점을 깨달았�
 ## [전체코드](https://github.com/Hsungjin/Flutter/tree/main/custom_shape)
 
 ## 참조
-[Mastering Shapes and Clipping in Flutter]("https://blog.stackademic.com/mastering-shapes-and-clipping-in-flutter-7c7caee5bcba")
+
+[Mastering Shapes and Clipping in Flutter](https://blog.stackademic.com/mastering-shapes-and-clipping-in-flutter-7c7caee5bcba)
+
 <!-- - [Mastering Shapes and Clipping in Flutter](https://medium.com/@moo_min/rive%EB%A5%BC-flutter%EC%97%90%EC%84%9C-%EC%82%AC%EC%9A%A9%ED%95%98%EB%8A%94-%EB%B0%A9%EB%B2%95-1533ccbfc7ac){:target="_blank"}
 - [패스트 캠퍼스 강의](https://fastcampus.co.kr/dev_online_dartflutter){:target="_blank"} -->
 <!-- end post -->
