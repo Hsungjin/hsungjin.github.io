@@ -4,15 +4,15 @@ title: Flutter Custom Shape를 알아보자
 date: 2024-10-29 15:11:33 +0900
 categories: [Flutter]
 tags: [Flutter, rive]
-description: Flutter 애니메이션을 넣을수 있는 방법중에 하나인 Rive에 대해서 알아보자
+description: 내 마음대로 만들어보는 CustomShape 도형들
 toc: true
 math: true
 mermaid: true
-image:
-  path: /assets/post/rive/rive_thumb_nail.png
-  width: 1000   # in pixels
-  height: 400   # in pixels
-  alt: 애니메이션을 곁들인
+# image:
+#   path: /assets/post/rive/rive_thumb_nail.png
+#   width: 1000   # in pixels
+#   height: 400   # in pixels
+#   alt: 애니메이션을 곁들인
 ---
 
 이전에도 말했듯이 모바일 개발자로써 디자인에 대한 갈망이 있다.
@@ -21,7 +21,7 @@ image:
 그러던 중 오픈카톡방에서 쿠로곰님이 아티클을 정리해서 올려주신 글을 봤는데 딱 눈에 들어온 Medium 글이 있었다.
 [Mastering Shapes and Clipping in Flutter](https://blog.stackademic.com/mastering-shapes-and-clipping-in-flutter-7c7caee5bcba) 라는 제목을 가졌는데 
 글을 보자마자 뭐야 너무 내맘에 쏙이잖아 라는 생각이 들었다.
-게다가 이번 Future<Flutter>에서 ABC Studio @Line 에서 박유진님이 연사하신 *풍성한 디자인 요청사항에 대응하기*을 들으면서
+게다가 이번 Future<Flutter>에서 ABC Studio @Line 에서 박유진님이 연사하신 `풍성한 디자인 요청사항에 대응하기` 를 들으면서
 와 저 모양을 저렇게 만들수도 있구나 느끼면서 저렇게 창의적으로 디자인 사항을 반영해보고 싶었던 부분도 컸던것 같다. 
 나였으면 그냥 이미지를 넣지 않았을까? 라고 생각한 부분도 컴포넌트화를 하고 해당 도형이 어디서든 쓰일수 있도록 하셨던 부분에 대해서 반성을 하게 되었다.
 그래서 이번에는 이런 도형을 만들어보고 어떻게 쓰일수 있을지 알아보고자 한다.
@@ -32,9 +32,15 @@ image:
 Shape: Path로 정의된 어떤 형태를 의미한다.
 Box: 4개의 점으로 구성된 직사각형 모양을 나타냅니다. 추가로 borderradius 같은 속성을 가질 수 있다.
 
-<!-- Flutter에서는 여러 컨텍스트에서 Box가 사용된다
-RenderBox, BoxDecoration, Boxborder, ShapeDecoration, ShapeBorder 등이 사용되고
-주로 Container, DecoratedSlivers, DecoratedBoxes 를 스타일링하기 위해 <span style='background-color:#ffdce0'>BoxDecoration</span>을 사용한다. -->
+Flutter에서는 여러 컨텍스트에서 Box가 사용된다:
+- **RenderBox**: 위젯의 레이아웃과 페인팅을 담당
+- **BoxDecoration**: 배경색, 테두리, 그림자 등을 정의
+- **BoxBorder**: 테두리 스타일을 정의
+- **ShapeDecoration**: 커스텀 형태의 장식을 정의
+- **ShapeBorder**: 테두리의 형태를 정의
+
+이러한 요소들은 주로 Container, DecoratedBox 등의 위젯을 스타일링하는 데 사용된다.
+특히 BoxDecoration은 가장 일반적으로 사용되며, 간단한 스타일링에 적합하다.
 
 ### 1.1 기본적인 Box 구현
 ```dart
@@ -106,8 +112,8 @@ Widget _item4() {
   );
 }
 ```
-Flutter는 `StarBorder`와 같은 미리 정의된 특수 도형들을 제공한다. 
-이러한 내장 도형들은 별도의 복잡한 구현 없이도 특별한 모양을 쉽게 만들 수 있게 해준다.
+Flutter는 `StarBorder`와 같은 미리 정의된 도형들을 제공한다. 
+이러한 도형들은 별도의 복잡한 구현 없이도 특별한 모양을 쉽게 만들 수 있게 해준다.
 물론 나도 처음 써본다..!
 
 ![shape#4](/assets/post/shape/shape4.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
@@ -116,21 +122,28 @@ Flutter는 `StarBorder`와 같은 미리 정의된 특수 도형들을 제공한
 
 메시지 버블 형태의 커스텀 도형을 만들어보자
 
+우선 OutlinedBorder를 extends 해서 사용하기 위해선
+
+getInnerPath, getOuterPath, pain, scale, copyWith 가 필요하다.
+
+![shape#9](/assets/post/shape/shpe_inout.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
+
+우선 weight를 이용해서 곡선의 정도를 나타낼 수 있다.
+이 weight 들은 `conicTo`의 파라미터로 사용된다.
+
+![shape#10](/assets/post/shape/shape_weight.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
+
 ```dart
 class MessageShapeBorder extends OutlinedBorder {
   final double borderRadius;
   final double weight;
 
-  const MessageShapeBorder({
-    super.side,
-    this.borderRadius = 50,
-    this.weight = 2.5
-  });
+  const MessageShapeBorder({super.side, this.borderRadius = 50, this.weight = 2.5});
 
   @override
   Path getInnerPath(Rect rect, {TextDirection? textDirection}) {
     final strokeWidth = side.width;
-    // rect의 경계값 계산
+
     final double left = rect.left + strokeWidth;
     final double right = rect.right - strokeWidth;
     final double top = rect.top + strokeWidth;
@@ -139,24 +152,66 @@ class MessageShapeBorder extends OutlinedBorder {
     final radius = math.max(0, borderRadius - 10);
     final offset = 10;
 
-    // Path를 사용한 도형 그리기
     return Path()
-      ..moveTo(left + offset + radius, bottom)  // 시작점 이동
-      ..conicTo(  // 코닉 곡선으로 둥근 모서리 구현
-          left + offset, bottom, 
-          left + offset, bottom - 2 * radius, 
-          weight)
-      // ... 나머지 경로 정의
-      ..close();  // 경로 닫기
+      ..moveTo(left + offset + radius, bottom)
+      ..conicTo(left + offset, bottom, left + offset, bottom - 2 * radius, weight)
+      ..lineTo(left + offset, top + radius)
+      ..conicTo(left + offset, top, left + offset + radius, top, weight)
+      ..lineTo(right - radius, top)
+      ..conicTo(right, top, right, top + radius, weight)
+      ..lineTo(right, bottom - radius)
+      ..conicTo(right, bottom, right - radius, bottom, weight)
+      ..close();
   }
-  // ... 나머지 구현
+
+  @override
+  Path getOuterPath(Rect rect, {TextDirection? textDirection}) {
+    final double left = rect.left;
+    final double right = rect.right;
+    final double top = rect.top;
+    final double bottom = rect.bottom;
+
+    final radius = borderRadius;
+    final offset = 10;
+
+    return Path()
+      ..moveTo(left, bottom)
+      ..conicTo(left + offset, bottom - offset, left + offset, bottom - 2 * radius, weight)
+      ..lineTo(left + offset, top + radius)
+      ..conicTo(left + offset, top, left + offset + radius, top, weight)
+      ..lineTo(right - radius, top)
+      ..conicTo(right, top, right, top + radius, weight)
+      ..lineTo(right, bottom - radius)
+      ..conicTo(right, bottom, right - radius, bottom, weight)
+      ..close();
+  }
+
+  @override
+  void paint(Canvas canvas, Rect rect, {TextDirection? textDirection}) {
+    canvas.drawPath(getInnerPath(rect), Paint()..color = side.color);
+  }
+
+  @override
+  ShapeBorder scale(double t) {
+    return this;
+  }
+
+  @override
+  OutlinedBorder copyWith({BorderSide? side}) {
+    return this;
+  }
 }
 ```
 
-이 커스텀 ShapeBorder는
+이 커스텀 MessageShapeBorder는
 1. `weight` 파라미터로 곡선의 둥글기를 조절할 수 있다
 2. `borderRadius`로 모서리의 전체적인 둥글기를 설정할 수 있다
 3. `conicTo` 메서드로 부드러운 곡선을 그릴 수 있다
+
+사실 직접 구현하면서 각 라인의 동작을 보기전 까지는 크게 와닿지 않을수 있다.
+물론 나도 그랬고, 하지만 실제로 라인바이 라인으로 conicTo, lineTo 를 넣어보면서 구현해 보면 쉽게 이해할수있다.
+
+### 2.1 메시지 버블 활용 예시
 
 ```dart
 Widget _item5() {
@@ -166,7 +221,8 @@ Widget _item5() {
 
 ![shape#5](/assets/post/shape/shape5.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
 
-### 2.1 메시지 버블 활용 예시
+### 2.2 메시지 버블 활용 예시
+
 ```dart
 Widget _item6() {
   return DecoratedBox(
@@ -186,7 +242,7 @@ Widget _item6() {
 
 ![shape#6](/assets/post/shape/shape6.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
 
-### 2.2 이미지 클리핑 예시
+### 2.3 이미지 클리핑 예시
 ```dart
 Widget _item7() {
   return ClipPath(
@@ -209,9 +265,26 @@ Widget _item7() {
 
 ## 내가 느낀 결론
 
+CustomShape를 직접 구현해보면서 몇 가지 중요한 점을 깨달았다:
+
+1. **재사용성의 중요성**: 
+  - Future<Flutter>에서 봤듯이 이런 도형들의 컴포넌트의 중요성을 한번 더 생각하게됐다.
+  - 처음에는 단순히 이미지로 처리하고 싶었던 부분들도 컴포넌트화하니 여러 곳에서 활용할 수 있었다.
+  - 크기나 색상 등을 파라미터로 받아 유연하게 사용할 수 있다는 장점이 있다.
+
+2. **성능 최적화**:
+  - 이미지 대신 코드로 그리는 것이 메모리 관리 면에서 효율적일 수 있다.
+
+3. **학습 곡선**:
+  - Path API를 처음 다루는 것이 어려울 수 있지만, 한번 배워놓으면 유용하게 쓰인다!
+  - lineTo, conicTo 등의 메서드를 실제로 그려보면서 이해하는 것이 중요하다
+
+앞으로도 단순히 디자인을 구현하는 것을 넘어서 재사용 가능하고 효율적인 컴포넌트를 만드는 것을 고민해야겠다.
+
+## [전체코드](https://github.com/Hsungjin/Flutter/tree/main/custom_shape)
 
 ## 참조
-
-<!-- - [Rive를 Flutter에서 사용하는 방법](https://medium.com/@moo_min/rive%EB%A5%BC-flutter%EC%97%90%EC%84%9C-%EC%82%AC%EC%9A%A9%ED%95%98%EB%8A%94-%EB%B0%A9%EB%B2%95-1533ccbfc7ac){:target="_blank"}
+[Mastering Shapes and Clipping in Flutter]("https://blog.stackademic.com/mastering-shapes-and-clipping-in-flutter-7c7caee5bcba")
+<!-- - [Mastering Shapes and Clipping in Flutter](https://medium.com/@moo_min/rive%EB%A5%BC-flutter%EC%97%90%EC%84%9C-%EC%82%AC%EC%9A%A9%ED%95%98%EB%8A%94-%EB%B0%A9%EB%B2%95-1533ccbfc7ac){:target="_blank"}
 - [패스트 캠퍼스 강의](https://fastcampus.co.kr/dev_online_dartflutter){:target="_blank"} -->
 <!-- end post -->
