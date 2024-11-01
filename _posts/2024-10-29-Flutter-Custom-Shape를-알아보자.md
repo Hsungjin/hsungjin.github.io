@@ -132,6 +132,7 @@ getInnerPath, getOuterPath, pain, scale, copyWith 가 필요하다.
 이 weight 들은 `conicTo`의 파라미터로 사용된다.
 
 ![shape#10](/assets/post/shape/shape_weight.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
+[conicTo공식문서](https://api.flutter.dev/flutter/dart-ui/Path/conicTo.html)
 
 ```dart
 class MessageShapeBorder extends OutlinedBorder {
@@ -263,6 +264,124 @@ Widget _item7() {
 
 ![shape#7](/assets/post/shape/shape7.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
 
+### 2.4 quadraticBezierTo의 사용
+
+quadraticBezierTo 는 나도 처음들어봤다.
+
+예제에 있어 구현하면서 공부해봤다.
+
+![shape#8](/assets/post/shape/shape8.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
+
+[공식문서](https://api.flutter.dev/flutter/dart-ui/Path/quadraticBezierTo.html) 에는 다음과 같이 나타나 있다.
+
+이걸 어떻게 사용할 수 있을까?
+
+![shape#9](/assets/post/shape/shape9.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
+
+예를 들어 다음과 같은 모양을 만든다고 해보자
+
+그러면 일단
+
+![shape#10](/assets/post/shape/shape10.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
+
+다음과 같은 사각형을 만들고 path를 통해서 도형을 하나씩 깍아 나가야 될 것이다.
+
+moveTo(double x, double y)를 통해서 이동 시켜주고
+lineTo(double x, double y)를 통해서 선을 그려주고
+quadraticBezierTo(double cp_x, double cp_y, double x, double y) 곡선을 그려줄 것이다.
+
+![shape#11](/assets/post/shape/shape11.png){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
+
+그럼 다음처럼 여러방면에서 사각형을 깍아주어야한다.
+
+quadraticBezierTo 사용하는 제어점은 cp_x, cp_y 라고 생각하면 된다.
+
+1. A로 이동
+2. B까지 선을 그어준다
+3. 제어점을 C로 잡고 D까지 곡선을 그려준다
+4. 제어점을 E로 잡고 F까지 곡선을 그려준다
+5. G까지 선을 이어준다
+6. 제어점을 H로 잡고 I까지 곡선을 그려준다
+7. J까지 선을 그어준다
+8. 제어점을 K로 잡고 L까지 곡선을 그려준다
+9. M까지 선을 그어준다
+10. 제어점은 N으로 잡고 O까지 곡선을 그려준다
+11.제어점을 P로 잡고 Q까지의 곡선을 그려준다
+12. R까지 선을 그어준다
+13. 제어점은 S로 잡고 T까지의 곡선을 그려준다
+14. U까지 가는 선을 그어준다
+15. 제어점을 V로 잡고 A까지의 곡선을 그려준다
+16. path를 close 해준다
+
+```dart
+class CardItem extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    var path = Path();
+
+    double sideRadius = 30.0;
+    double midPoint = size.height * (3 / 5);
+    double cornerRadius = 20.0;
+
+    // 1. A로 이동
+    path.moveTo(0, cornerRadius);
+    // 2. B까지 선을 그어준다
+    path.lineTo(0, (midPoint - sideRadius));
+    // 3. 제어점을 C로 잡고 D까지 곡선을 그려준다
+    path.quadraticBezierTo(sideRadius, midPoint - sideRadius, sideRadius, midPoint);
+    // 4. 제어점을 E로 잡고 F까지 곡선을 그려준다
+    path.quadraticBezierTo(sideRadius, midPoint + sideRadius, 0, midPoint + sideRadius);
+    // 5. G까지 선을 이어준다
+    path.lineTo(0, size.height - cornerRadius);
+    // 6. 제어점을 H로 잡고 I까지 곡선을 그려준다
+    path.quadraticBezierTo(0, size.height, cornerRadius, size.height);
+    // 7. J까지 선을 그어준다
+    path.lineTo(size.width - cornerRadius, size.height);
+    // 8. 제어점을 K로 잡고 L까지 곡선을 그려준다
+    path.quadraticBezierTo(size.width, size.height, size.width, size.height - cornerRadius);
+    // 9. M까지 선을 그어준다
+    path.lineTo(size.width, (midPoint + sideRadius));
+    // 10. 제어점은 N으로 잡고 O까지 곡선을 그려준다
+    path.quadraticBezierTo((size.width - sideRadius), (midPoint + sideRadius), (size.width - sideRadius), (midPoint));
+    // 11.제어점을 P로 잡고 Q까지의 곡선을 그려준다
+    path.quadraticBezierTo((size.width - sideRadius), (midPoint - sideRadius), size.width, midPoint - sideRadius);
+    // 12. R까지 선을 그어준다
+    path.lineTo(size.width, cornerRadius);
+    // 13. 제어점은 S로 잡고 T까지의 곡선을 그려준다
+    path.quadraticBezierTo(size.width, 0, size.width - cornerRadius, 0);
+    // 14. U까지 가는 선을 그어준다
+    path.lineTo(cornerRadius, 0);
+    // 15. 제어점을 V로 잡고 A까지의 곡선을 그려준다
+    path.quadraticBezierTo(0, 0, 0, cornerRadius);
+    // 16. path를 close 해준다
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
+}
+
+Widget _item8() {
+  return ClipPath(
+    clipper: CardItem(),
+    child: Container(
+      child: Image.asset(
+        "assets/tt.jpeg",
+        height: 200,
+        width: 300,
+        fit: BoxFit.cover,
+        cacheHeight: (300 * MediaQuery.of(context).devicePixelRatio).toInt(),
+      ),
+    ),
+  );
+}
+```
+
+아니 뭐가 이렇게 복잡하지...?
+그래도 생긴 모양은 이쁘다
+다음과 같이 도형을 하나하나 깍아서 이쁜 모양을 만들 수 있다.
+
 ## 내가 느낀 결론
 
 CustomShape를 직접 구현해보면서 몇 가지 중요한 점을 깨달았다:
@@ -281,11 +400,14 @@ CustomShape를 직접 구현해보면서 몇 가지 중요한 점을 깨달았�
 
 앞으로도 단순히 디자인을 구현하는 것을 넘어서 재사용 가능하고 효율적인 컴포넌트를 만드는 것을 고민해야겠다.
 
+~~미리 구현된 라이브러리 최고~~
+
 ## [전체코드](https://github.com/Hsungjin/Flutter/tree/main/custom_shape)
 
 ## 참조
 
 [Mastering Shapes and Clipping in Flutter](https://blog.stackademic.com/mastering-shapes-and-clipping-in-flutter-7c7caee5bcba)
+[Custom shapes in Flutter](https://kathir-i.medium.com/custom-shapes-in-flutter-372d117cc2c8)
 
 <!-- - [Mastering Shapes and Clipping in Flutter](https://medium.com/@moo_min/rive%EB%A5%BC-flutter%EC%97%90%EC%84%9C-%EC%82%AC%EC%9A%A9%ED%95%98%EB%8A%94-%EB%B0%A9%EB%B2%95-1533ccbfc7ac){:target="_blank"}
 - [패스트 캠퍼스 강의](https://fastcampus.co.kr/dev_online_dartflutter){:target="_blank"} -->
