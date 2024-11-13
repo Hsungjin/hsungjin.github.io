@@ -17,7 +17,7 @@ image:
 
 모바일 앱 개발자로서 가장 기본이 되는 것은 앱의 생명주기(App LifeCycle)에 대한 이해라고 생각한다. iOS 개발을 시작하면서 이 개념을 처음 접하게 되었다.
 
-하지만 Flutter 개발자로 전향한 후에는 이 중요한 개념을 다소 소홀히 했던 것 같다. Flutter의 직관적인 생명주기 덕분에 깊이 있게 들여다보지 않았을 수도 있다.
+하지만 Flutter 개발자로 전향한 후에는 이 중요한 개념을 다소 소홀히 했던 것 같다. Flutter의 직관적인 생명주기 덕분에 깊이 있게 들여다보지 않았다.
 
 특히 Android의 생명주기는 iOS와는 또 다른 특성을 가지고 있는데, 이 부분에 대해서는 깊이 있는 학습이 부족했다.
 
@@ -25,7 +25,7 @@ image:
 
 이러한 경험을 통해 플랫폼별 생명주기의 차이점을 제대로 이해하는 것이 얼마나 중요한지 깨닫게 되었다. 
 
-이번 포스트에서는 Flutter, iOS, 그리고 Android의 앱 생명주기를 자세히 살펴보고 비교 분석해보려고 한다.
+이번 포스트에서는 Flutter, iOS, 그리고 Android의 앱 생명주기를 자세히 살펴보고 비교 해보려고 한다.
 
 <!-- start post -->
 ## 1. Flutter 앱 생명주기
@@ -38,15 +38,17 @@ Flutter의 앱 생명주기는 네이티브 플랫폼의 생명주기 이벤트�
 
 Flutter의 생명주기를 관리하는 방법은 크게 두 가지가 있다
 
-1. **WidgetsBindingObserver**: 
+1. **WidgetsBindingObserver**
    - 전통적으로 많이 사용되던 방식
    - 간단하고 직관적인 인터페이스 제공
    - 기본적인 생명주기 이벤트만 처리 가능
 
-2. **AppLifecycleListener** (Flutter 3.13+):
+
+2. **AppLifecycleListener** (Flutter 3.13 이후)
    - 더 세분화된 생명주기 이벤트 제공
-   - 플랫폼별 특수한 기능 지원 (예: 데스크톱의 종료 요청)
+   - 플랫폼별 특수한 기능 지원 (예: 데스크톱의 종료 요청(onExitRequested))
    - 코드가 더 명확하고 관리하기 쉬움
+
 
 우선 이번에 공부하면서 처음 알게 되었는데 Flutter 3.13 버전에 들어서면서 앱의 생명주기를 더욱 유연하게 다룰 수 있는 AppLifecycleListener class 가 추가 되었다.
 
@@ -67,8 +69,11 @@ Flutter의 생명주기를 관리하는 방법은 크게 두 가지가 있다
 코드 자체도 완전히 직관적이고 4가지의 상태로 구분된다.
 
 - inactive: 앱이 포그라운드에 있지만 사용자와 상호작용하지 않는 상태이다. (예: 전화가 걸려올 때)
+
 - paused: 앱이 백그라운드에 있지만, 사용자에게 보이지 않으며, 상호작용할 수 없는 상태로 CPU 자원을 최대한 절약하는 상태이다.
+
 - resumed: 앱이 포그라운드에 있고, 사용자와 상호작용 가능한 상태이다. 일반적인 사용 상태이다.
+
 - detached: 앱이 완전히 종료되기 직전에 발생하며, Flutter 엔진이 제거된 상태이다.
 
 그럼 이제 각 상태에 대해서 Observer를 추가하고 매초에 1씩 증가하는 카운터 앱을 만들어보자
@@ -198,6 +203,8 @@ class _WidgetBindingObserverState extends State<WidgetBindingObserver> with Widg
 
 앱이 백그라운드 포그라운드를 이동할때 inactive를 갔다가 resumed 또는 paused 상태로 전환되는걸 알 수 있다.
 
+그럼 이제 AppLifecycleListener을 사용해서 앱의 상태관리에 대해서 알아보자
+
 ### 1.2 AppLifecycleListener Class
 
 [AppLifecycleListener 공식문서](https://api.flutter.dev/flutter/widgets/AppLifecycleListener-class.html?source=post_page-----5a2aafbf7f4e--------------------------------)
@@ -258,15 +265,13 @@ class _AppLifeCycleListenerState extends State<AppLifeCycleListener> {
 
 찾아보니 onExitRequested 콜백은 웹, 데스크탑과 같은 특정 플랫폼에서만 지원한다고 한다.
 
-기존 WidgetsBindingObserver 보다 디테일하게 앱의 상태에 대해서 관리할 수 있는것 같다.
-
 ![life#4](/assets/post/applife/applife_4.gif){:style="border:1px solid #eaeaea; border-radius: 7px; padding: 0px;" }
 
 위의 이미지를 보면 그냥 바로 백그라운드로 갔다가 다시 포그라운드로 들어가는게 아니라
 
 inactive -> hide -> pause -> restart -> show -> resume 의 순서로 들어오는걸 볼수있다.
 
-기존 WidgetsBindingObserver 는 크게 4가지 상태로 관리할 수 있었는데
+기존 WidgetsBindingObserver 는 크게 4가지 상태로 관리할 수 있었는데 보다 디테일하게 앱의 상태에 대해서 관리할 수 있는것 같다
 
 AppLifecycleListener는 조금더 세분화 해서 사용할 수 있다는 생각이 들었다.
 
@@ -277,17 +282,17 @@ AppLifecycleListener는 조금더 세분화 해서 사용할 수 있다는 생�
 iOS에서는 UIApplicationDelegate와 UISceneDelegate를 통해 앱의 생명주기를 관리한다. 
 주요 생명주기 메서드는 다음과 같다
 
-- application(_:didFinishLaunchingWithOptions:): 앱이 처음 실행될 때 호출된다. 앱의 초기 설정이나 초기 데이터 로드를 수행할 때 사용
+- application(_:didFinishLaunchingWithOptions:) : 앱이 처음 실행될 때 호출된다. 앱의 초기 설정이나 초기 데이터 로드를 수행할 때 사용
 
-- applicationDidBecomeActive: 앱이 포그라운드에 있어 사용자와 상호작용할 준비가 되었을 때 호출
+- applicationDidBecomeActive : 앱이 포그라운드에 있어 사용자와 상호작용할 준비가 되었을 때 호출
 
-- applicationWillResignActive: 앱이 비활성화되기 직전에 호출되며, 전화가 오거나 잠금 화면이 활성화될 때 발생
+- applicationWillResignActive : 앱이 비활성화되기 직전에 호출되며, 전화가 오거나 잠금 화면이 활성화될 때 발생
 
-- applicationDidEnterBackground: 앱이 백그라운드 상태로 전환될 때 호출 된다. 백그라운드에서 작업을 이어갈 수 있도록 필요한 설정을 한다
+- applicationDidEnterBackground : 앱이 백그라운드 상태로 전환될 때 호출 된다. 백그라운드에서 작업을 이어갈 수 있도록 필요한 설정을 한다
 
-- applicationWillEnterForeground: 백그라운드에서 포그라운드로 전환될 때 호출된다. 사용자 인터페이스를 갱신할 때 사용된다
+- applicationWillEnterForeground : 백그라운드에서 포그라운드로 전환될 때 호출된다. 사용자 인터페이스를 갱신할 때 사용된다
 
-- applicationWillTerminate: 앱이 종료되기 직전에 호출된다. 상태 저장 작업 등을 여기에 포함시킬 수 있다
+- applicationWillTerminate : 앱이 종료되기 직전에 호출된다. 상태 저장 작업 등을 여기에 포함시킬 수 있다
 
 iOS 생명주기 특징
 
@@ -326,19 +331,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 Android의 생명주기는 Activity를 중심으로 작동하며, 각 상태에 따른 콜백 메서드를 제공한다. 주요 생명주기 단계는 다음과 같다
 
-- onCreate(): 액티비티가 생성될 때 호출됩니다. 초기 설정 작업이나 UI를 구성하는 코드가 여기에 들어갑니다.
+- onCreate() : 액티비티가 생성될 때 호출 된다. 초기 설정 작업이나 UI를 구성하는 코드가 여기에 들어간다
 
-- onStart(): 액티비티가 사용자에게 보이기 시작할 때 호출됩니다.
+- onStart() : 액티비티가 사용자에게 보이기 시작할 때 호출
 
-- onResume(): 액티비티가 포커스를 받아 사용자와 상호작용이 가능한 상태입니다.
+- onResume() : 액티비티가 포커스를 받아 사용자와 상호작용이 가능한 상태
 
-- onPause(): 액티비티가 일시 정지 상태로 전환될 때 호출되며, 사용자가 다른 액티비티로 전환하거나 홈 화면으로 나갈 때 발생합니다.
+- onPause() : 액티비티가 일시 정지 상태로 전환될 때 호출되며, 사용자가 다른 액티비티로 전환하거나 홈 화면으로 나갈 때 발생
 
-- onStop(): 액티비티가 더 이상 사용자에게 보이지 않을 때 호출됩니다.
+- onStop() : 액티비티가 더 이상 사용자에게 보이지 않을 때 호출
 
-- onRestart(): 액티비티가 일시 정지 상태에서 다시 포그라운드로 돌아올 때 호출됩니다.
+- onRestart() : 액티비티가 일시 정지 상태에서 다시 포그라운드로 돌아올 때 호출
 
-- onDestroy(): 액티비티가 소멸될 때 호출됩니다. 자원 해제와 같은 종료 작업이 필요할 때 사용합니다.
+- onDestroy() : 액티비티가 소멸될 때 호출됩니다. 자원 해제와 같은 종료 작업이 필요할 때 사용
 
 Android 생명주기 특징
 
@@ -420,6 +425,8 @@ class MainActivity : AppCompatActivity() {
 ## 참조
 
 [[Flutter] 앱의 라이프사이클 다루기](https://medium.com/@cody.yun/flutter-%EC%95%B1%EC%9D%98-%EB%9D%BC%EC%9D%B4%ED%94%84%EC%82%AC%EC%9D%B4%ED%81%B4-%EB%8B%A4%EB%A3%A8%EA%B8%B0-5a2aafbf7f4e)
+[안드로이드 액티비티 생명주기(Life Cycle)](https://brunch.co.kr/@mystoryg/80)
+[[iOS/Swift] 앱의 생명주기 (App’s life cycle)](https://velog.io/@ahneve/iOSSwift-%EC%95%B1%EC%9D%98-%EC%83%9D%EB%AA%85%EC%A3%BC%EA%B8%B0-Apps-life-cycle)
 
 <!-- - [Mastering Shapes and Clipping in Flutter](https://medium.com/@moo_min/rive%EB%A5%BC-flutter%EC%97%90%EC%84%9C-%EC%82%AC%EC%9A%A9%ED%95%98%EB%8A%94-%EB%B0%A9%EB%B2%95-1533ccbfc7ac){:target="_blank"}
 - [패스트 캠퍼스 강의](https://fastcampus.co.kr/dev_online_dartflutter){:target="_blank"} -->
