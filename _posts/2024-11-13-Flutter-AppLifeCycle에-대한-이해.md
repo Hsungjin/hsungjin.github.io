@@ -425,7 +425,9 @@ class MainActivity : AppCompatActivity() {
 ## 참조
 
 [[Flutter] 앱의 라이프사이클 다루기](https://medium.com/@cody.yun/flutter-%EC%95%B1%EC%9D%98-%EB%9D%BC%EC%9D%B4%ED%94%84%EC%82%AC%EC%9D%B4%ED%81%B4-%EB%8B%A4%EB%A3%A8%EA%B8%B0-5a2aafbf7f4e)
+
 [안드로이드 액티비티 생명주기(Life Cycle)](https://brunch.co.kr/@mystoryg/80)
+
 [[iOS/Swift] 앱의 생명주기 (App’s life cycle)](https://velog.io/@ahneve/iOSSwift-%EC%95%B1%EC%9D%98-%EC%83%9D%EB%AA%85%EC%A3%BC%EA%B8%B0-Apps-life-cycle)
 
 <!-- - [Mastering Shapes and Clipping in Flutter](https://medium.com/@moo_min/rive%EB%A5%BC-flutter%EC%97%90%EC%84%9C-%EC%82%AC%EC%9A%A9%ED%95%98%EB%8A%94-%EB%B0%A9%EB%B2%95-1533ccbfc7ac){:target="_blank"}
