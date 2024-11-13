@@ -3,7 +3,7 @@ layout: post
 title: Flutter Custom Shape를 알아보자
 date: 2024-10-29 15:11:33 +0900
 categories: [Flutter]
-tags: [Flutter, rive]
+tags: [Flutter, CustomShape]
 description: 내 마음대로 만들어보는 CustomShape 도형들
 toc: true
 math: true
