@@ -16,7 +16,7 @@ timezone: Asia/Seoul
 
 title: 망각의 코딩러 <br> 흐성진 # the main title
 
-tagline: 흐성진은 망각의 동물이다. <br> 망각하기전에 기록하자 # it will display as the subtitle
+tagline: 망각하기전에 기록하자 # it will display as the subtitle
 
 description: >- # used by seo meta and the atom feed
   흐성진의 개발 블로그
