@@ -238,6 +238,79 @@ Bloc 자체는 Cubit과 유사한 상태로 사용되며 함수 호출해서 sta
 
 Bloc을 생성하는 것은 Cubit를 생성하는 것과 비슷하지만, 관리할 state를 정의하는 것 외에 Bloc이 처리할 event도 정의해야 한다는 점이 다르다.
 
+Event는 Bloc에 대한 입력으로 일반적으로 사용자가 버튼을 누르거나 페이지를 로드하는 등의 사용자 입력에 의해 발생한다.
+
+```dart
+sealed class CounterEvent {}
+
+final class CounterIncrementPressed extends CounterEvent {}
+
+class CounterBloc extends Bloc<CounterEvent, int> {
+  CounterBloc() : super(0);
+}
+```
+
+Cubit과 마찬가지로 super에 초기 상태를 정의해준다.
+
+```dart
+sealed class CounterEvent {}
+
+final class CounterIncrementPressed extends CounterEvent {}
+final class CounterDecrementPressed extends CounterEvent {}
+
+class CounterBloc extends Bloc<CounterEvent, int> {
+  CounterBloc() : super(0) {
+    on<CounterIncrementPressed>((event, emit) {
+      emit(state + 1);
+    });
+
+    on<CounterDecrementPressed>((event, emit) {
+      emit(state - 1);
+    });
+  }
+}
+```
+
+그 다음 Bloc은 Cubit의 함수가 아닌 on<Event> 메서드를 통해 이벤트를 처리한다.
+
+위의 예시 코드에서는 모든 CounterIncrementPressed와 CounterDecrementPressed event를 관리하기 위해 EventHandler를 등록했다.
+
+들어오는 각 CounterIncrementPressed와 CounterDecrementPressed event에 대해 state getter와 emit(state + 1) 또는 (satate -1)을 통해 bloc의 현재 상태에 접근할 수 있다.
+
+```dart
+Future<void> main() async {
+  final bloc = CounterBloc();
+  print(bloc.state); // 0
+  bloc.add(CounterIncrementPressed());
+  await Future.delayed(Duration.zero);
+  print(bloc.state); // 1
+  bloc.add(CounterDecrementPressed());
+  await Future.delayed(Duration.zero);
+  print(bloc.state); // 0
+  await bloc.close();
+}
+```
+
+위의 예시 코드에서는 먼저 CounterBloc의 인스턴스를 생성한다.
+
+그런 다음 초기 state인 Bloc의 현재 state를 출력한다. 아직 새로운 state가 emit되지 않았으므로 0이 출력된다.
+
+다음으로 state 변경하기 위해 CounterIncrementPressed event를 추가한다.
+
+0에서 1로 변경된 Bloc의 state를 출력하고
+
+다시 CounterDecrementPressed event를 추가하면 0으로 변경된 state를 출력하고
+
+Bloc의 close룰 호출하여 내부 state stream을 닫는다.
+
+### Bloc Tutorial
+
+#### 1. Counter
+
+#### 2. Timer
+
+#### 3. Infinite List
+
 ## 내가 느낀 결론
 
 이번 앱 생명주기 학습을 통해 몇 가지 중요한 깨달음을 얻었다.
