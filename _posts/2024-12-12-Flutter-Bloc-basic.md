@@ -9,10 +9,10 @@ toc: true
 math: true
 mermaid: true
 image:
-  path: /assets/post/equal/equal_1.png
+  path: /assets/post/bloc/bloc_2.png
   width: 1000   # in pixels
   height: 400   # in pixels
-  alt: equal
+  alt: bloc
 ---
 
 처음 플러터 개발자로 커리어를 시작하려고할때 면접에서 제일 많이 받은 질문이 상태관리 라이브러리에 대해 얼마나 아는지였다. 🤔

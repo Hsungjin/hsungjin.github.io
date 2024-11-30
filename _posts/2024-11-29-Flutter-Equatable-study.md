@@ -8,6 +8,11 @@ description: Flutter의 Equatable 라이브러리에 대해 알아보자
 toc: true
 math: true
 mermaid: true
+image:
+  path: /assets/post/equal/equal_1.png
+  width: 1000   # in pixels
+  height: 400   # in pixels
+  alt: equal
 ---
 
 원래는 Bloc에 대해서 자세하게 작성하고 싶었지만, 아직 초보 플러터 개발자의 입장에서 조금 더 내용의 구체화가 필요하다고 생각이 들었다.
