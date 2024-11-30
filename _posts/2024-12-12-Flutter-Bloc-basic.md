@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Flutter Bloc 에 대한 기초 예제
-date: 2024-11-26 15:11:33 +0900
+date: 2024-12-12 15:11:33 +0900
 categories: [Flutter]
 tags: [Flutter, Bloc]
 description: 플러터의 대표적인 상태관리 라이브러리 Bloc에 대해 알아보자
