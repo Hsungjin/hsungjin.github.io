@@ -10,9 +10,10 @@ math: true
 mermaid: true
 image:
   path: /assets/post/applife/applife_3.png
-  width: 1000   # in pixels
-  height: 400   # in pixels
+  width: 800   # in pixels
+  height: 500   # in pixels
   alt: 생명주기
+  align: center
 ---
 
 모바일 앱 개발자로서 가장 기본이 되는 것은 앱의 생명주기(App LifeCycle)에 대한 이해라고 생각한다. iOS 개발을 시작하면서 이 개념을 처음 접하게 되었다.

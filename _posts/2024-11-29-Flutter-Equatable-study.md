@@ -10,9 +10,10 @@ math: true
 mermaid: true
 image:
   path: /assets/post/equal/equal_1.png
-  width: 1000   # in pixels
-  height: 400   # in pixels
+  width: 800   # in pixels
+  height: 500   # in pixels
   alt: equal
+  align: center
 ---
 
 원래는 Bloc에 대해서 자세하게 작성하고 싶었지만, Bloc에 대한 내용을 잘 정리하기엔 아직 초보 플러터 개발자의 입장에서 조금 더 내용의 구체화가 필요하다고 생각이 들었다.
