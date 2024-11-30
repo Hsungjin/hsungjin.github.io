@@ -15,23 +15,27 @@ image:
   alt: equal
 ---
 
-원래는 Bloc에 대해서 자세하게 작성하고 싶었지만, 아직 초보 플러터 개발자의 입장에서 조금 더 내용의 구체화가 필요하다고 생각이 들었다.
+원래는 Bloc에 대해서 자세하게 작성하고 싶었지만, Bloc에 대한 내용을 잘 정리하기엔 아직 초보 플러터 개발자의 입장에서 조금 더 내용의 구체화가 필요하다고 생각이 들었다.
 
 그래서 Bloc 공식문서 예제에 자주 등장하는 Equtable 이라는 라이브러리가 나오는데 이 라이브러리에 대해서 어떤 역할을 하고 왜 사용하는게 좋은지
 
-이 부분도 알고 넘어가면 좋을 것 같아서 자세하게 알아보려고 한다.
+이 부분도 알고 넘어가면 좋을 것 같아서 자세하게 공부해봤다.
 
 ## 1. Equatable이란?
 
-Equatable은 Dart/Flutter에서 객체 간의 값 비교를 쉽게 구현할 수 있도록 도와주는 패키지이다.
+Equatable은 Dart와 Flutter에서 객체 간의 값 비교를 쉽게 구현할 수 있도록 도와주는 패키지이다.
+
+그냥 값들을 비교하면 되는거 아니야? 라고 생각할 수 있지만 전혀 아니다.
 
 Dart에서는 기본적으로 두 객체를 비교할 때 참조 동등성(reference equality)를 사용한다.
 
-즉 두 객체가 동일한 메모리 주소를 가리킬 때만 같다고 판단한다.
+한마디로 두 객체가 동일한 메모리 주소를 가리킬 때만 같다고 판단한다.
+
+그래서 객체 안의 값이 같다고 하더라도 실제로 두 객체가 다른 메모리 주소를 가리키고 있기 때문에 다르다고 판단한다.
 
 하지만 Equatable을 사용하면 값 동등성(value equality)을 쉽게 구현할 수 있다.
 
-즉, 객체의 속성 값이 같다면 두 객체를 같다고 판단할 수 있게 된다.
+즉 객체의 속성 값이 같다면 두 객체를 같다고 판단할 수 있게 된다.
 
 ### 1.1 왜 Equatable이 필요할까?
 
@@ -64,6 +68,8 @@ void main() {
 이는 위에서 설명했듯이 Dart에서는 값이 같더라도 실제로 두 객체가 서로 다른 메모리 주소를 참조하고 있기 때문이다. 
 
 만약 Equtable을 사용하지 않고 비교를 하려면 조금 복잡해질 수 있다.
+
+두 값에 대한 hashCode를 비교하는 방법이 있으로 구현해야 한다.
 
 ```dart
 class Person {
@@ -128,6 +134,8 @@ void main() {
 }
 ```
 
+Equatable을 사용하면 위와 같이 간단하게 객체 비교를 할 수 있게 해준다.
+
 여기서 주의 해야할 점은 Equatable은 변경 불가능한 객체에서만 작동하도록 설계 되어있으므로 모든 변수가 final로 선언되어야 한다.
 
 ### 2.2 props 메서드 이해하기
@@ -155,7 +163,7 @@ class Person extends Equatable {
   @override
   List<Object> get props => [name, age, hobbies, birthDate];
 
-  // JSON 형식으로 작업해야 할 경우
+  // JSON 형식의 작업을 해야 할 경우
   factory Person.fromJson(Map<String, dynamic> json) {
     return Person(
       name: json['name'],
@@ -184,6 +192,9 @@ void main() {
   
   final set = {person1, person2};
   print(set.length); // 1 (중복이 제거됨)
+
+  final map = {person1: 'hsungjin', person2: 'hsungjin'};
+  print(map.length); // 1 (중복이 제거됨)
 }
 ```
 
